@@ -1,0 +1,36 @@
+{
+  "variables": {
+    "source_ami": null,
+    "domain": null,
+    "site": null,
+    "revision": null
+  },
+
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "ap-southeast-2",
+      "source_ami": "{{user `source_ami`}}",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "{{user `domain`}} Mirror {{timestamp}}",
+      "tags": { "Provisioner Revision": "{{user `revision`}}" },
+      "enhanced_networking": true
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "000-default.conf",
+      "destination": "/tmp/000-default.conf"
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "SITE={{user `site`}}"
+      ],
+      "script": "provisioner.sh"
+    }
+  ]
+}
